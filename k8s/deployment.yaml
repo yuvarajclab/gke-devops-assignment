@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: devops-app-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: devops-app
+
+  template:
+    metadata:
+      labels:
+        app: devops-app
+
+    spec:
+      containers:
+      - name: devops-app
+
+        image: asia-south1-docker.pkg.dev/project-bc7a0df3-c037-4d41-86a/devops-repo/gke-devops-app:v1
+
+        ports:
+        - containerPort: 3000
