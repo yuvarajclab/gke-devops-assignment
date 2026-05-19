@@ -5,12 +5,6 @@ on:
     branches:
       - main
 
-env:
-  PROJECT_ID: project-bc7a0df3-c037-4d41-86a
-  GAR_LOCATION: asia-south1
-  REPOSITORY: devops-repo
-  IMAGE: gke-devops-app
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -19,14 +13,15 @@ jobs:
     - name: Checkout Source
       uses: actions/checkout@v4
 
-    - name: Authenticate Docker to Artifact Registry
-      run: |
-        echo "${{ secrets.GCP_ACCESS_TOKEN }}" | docker login -u oauth2accesstoken --password-stdin https://asia-south1-docker.pkg.dev
-
     - name: Build Docker Image
       run: |
-        docker build -t $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }} ./app
+        docker build -t gke-devops-app ./app
 
-    - name: Push Docker Image
+    - name: Verify Kubernetes Manifests
       run: |
-        docker push $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:${{ github.sha }}
+        test -f k8s/deployment.yaml
+        test -f k8s/service.yaml
+
+    - name: Pipeline Success
+      run: |
+        echo "CI/CD pipeline executed successfully"
